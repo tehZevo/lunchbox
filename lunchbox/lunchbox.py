@@ -21,23 +21,23 @@ class Lunchbox:
         self.on_release = on_release
         self.on_polytouch = on_polytouch
         
-    def handle_message(self, message):
+    def handle_message(self, message, pad):
         # print(message)
         if message.type == "note_on":
             x, y = note_to_xy(message.note)
             if message.velocity > 0:
-                self.on_press(x, y, message.velocity)
+                self.on_press(x, y, message.velocity, pad=pad)
             else:
-                self.on_release(x, y)
+                self.on_release(x, y, pad=pad)
         if message.type == "polytouch":
             x, y = note_to_xy(message.note)
-            self.on_polytouch(x, y, message.value)
+            self.on_polytouch(x, y, message.value, pad=pad)
         if message.type == "control_change":
             x, y = note_to_xy(message.control)
             if message.value > 0:
-                self.on_press(x, y, message.value)
+                self.on_press(x, y, message.value, pad=pad)
             else:
-                self.on_release(x, y)
+                self.on_release(x, y, pad=pad)
     
     def list_devices(self):
         print("Input devices:")
@@ -52,8 +52,9 @@ class Lunchbox:
         #TODO: search for all launchpads and autoconnect
         in_device = self.in_devices[0]
         out_device = self.out_devices[0]
+        pad = 0 #TODO: remove hardcoded pad number
         #TODO: support multiple devices here
-        self.inport = mido.open_input(in_device, callback=lambda message: self.handle_message(message))
+        self.inport = mido.open_input(in_device, callback=lambda message: self.handle_message(message, pad))
         self.outport = mido.open_output(out_device)
         
         enter_programmer_mode = Message("sysex", data=[0, 32, 41, 2, 12, 14, PROGRAMMER_MODE])

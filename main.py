@@ -10,14 +10,14 @@ from lunchbox import Lunchbox
 print(mido.get_input_names())
 print(mido.get_output_names())
 
-def press(x, y, velocity):
-    print("pressed", x, y, velocity)
+def press(x, y, velocity, pad=0):
+    print("pad", pad, "pressed", x, y, velocity)
 
-def release(x, y):
-    print("released", x, y)
+def release(x, y, pad=0):
+    print("pad", pad, "released", x, y)
 
-def polytouch(x, y, value):
-    print("polytouch", x, y, value)
+def polytouch(x, y, value, pad=0):
+    print("pad", pad, "polytouch", x, y, value)
 
 
 in_device = "MIDIIN2 (LPX MIDI) 3"
