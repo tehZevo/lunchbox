@@ -97,12 +97,19 @@ def main():
     global PAD_OCTAVE_OFFSETS, lunch
     
     lunch = Lunchbox(press, release, polytouch)
+    print("Availalable midi devices:")
     lunch.list_devices()
     
     if AUTODETECT:
         lunch.autodetect()
     else:
         lunch.connect(IN_DEVICES, OUT_DEVICES)
+    
+    if len(lunch.connected_devices) == 0:
+        print("No devices connected to Lunchbox, exiting.")
+        exit(0)
+        
+    lunch.list_connected_devices()
 
     #TODO: test
     if type(PAD_OCTAVE_OFFSETS) == int:

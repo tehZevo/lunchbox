@@ -52,6 +52,7 @@ class Lunchbox:
         self.on_polytouch = on_polytouch
         self.in_ports = []
         self.out_ports = []
+        self.connected_devices = []
     
     def light(self, x, y, r, g=None, b=None, pad=0):
         #assume hex
@@ -81,12 +82,26 @@ class Lunchbox:
     
     def list_devices(self):
         print("Input devices:")
+        if len(mido.get_input_names()) == 0:
+            print("<none>")
         for device in mido.get_input_names():
             print("-", device)
         
         print("Output devices:")
+        if len(mido.get_output_names()) == 0:
+            print("<none>")
         for device in mido.get_output_names():
             print("-", device)
+    
+    def list_connected_devices(self):
+        print("Connected devices:")
+        if len(self.connected_devices) == 0:
+            print("<none>")
+            return
+            
+        for in_device, out_device in self.connected_devices:
+            print(f"- in: '{in_device}', out: '{out_device}'")
+        
     
     def connect_to_pad(self, in_device, out_device, pad):
         in_port = mido.open_input(in_device, callback=lambda message: self.handle_message(message, pad))
@@ -102,6 +117,10 @@ class Lunchbox:
         
         self.in_ports.append(in_port)
         self.out_ports.append(out_port)
+        self.connected_devices.append({
+            "in": in_device,
+            "out": out_device
+        })
     
     def live_mode(self, pad):
         enter_live_mode = Message("sysex", data=[0, 32, 41, 2, 12, 14, LIVE_MODE])
