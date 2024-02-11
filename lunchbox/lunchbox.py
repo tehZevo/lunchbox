@@ -1,3 +1,5 @@
+import sys
+import signal
 import time
 
 import mido
@@ -86,10 +88,13 @@ class Lunchbox:
         out_port = mido.open_output(out_device)
         
         enter_programmer_mode = Message("sysex", data=[0, 32, 41, 2, 12, 14, PROGRAMMER_MODE])
-        #TODO: auto exit prog mode on sigint
         out_port.send(enter_programmer_mode)
         
         return in_port, out_port
+    
+    def live_mode(self, pad):
+        enter_live_mode = Message("sysex", data=[0, 32, 41, 2, 12, 14, LIVE_MODE])
+        self.out_ports[pad].send(enter_live_mode)
         
     def connect(self):
         #TODO: search for all launchpads and autoconnect
@@ -99,5 +104,14 @@ class Lunchbox:
             self.out_ports.append(out_port)
         
     def wait(self):
+        #reset pads on sigint
+        def signal_handler(sig, frame):
+            for pad in range(len(self.out_ports)):
+                self.live_mode(pad)
+            sys.exit(0)
+            #TODO: fix double ctrl c requirement
+        
+        signal.signal(signal.SIGINT, signal_handler)
+        
         while True:
             time.sleep(1)
