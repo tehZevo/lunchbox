@@ -1,6 +1,8 @@
 import sys
 import signal
+import re
 import time
+import traceback
 
 import mido
 from mido import Message
@@ -13,6 +15,11 @@ LIVE_MODE = 0
 
 LIGHT_SYSEX = [0, 32, 41, 2, 12, 3]
 RGB_LIGHT_TYPE = 3
+
+MIDI_MATCH = [r"MIDI(IN|OUT)\d+ \(LPX MIDI\)", r"Launchpad X:"]
+
+def should_autodetect_device(name):
+    return any([re.match(pattern, name) for pattern in MIDI_MATCH])
 
 def hex_to_rgb(hex):
     hex = hex.lstrip('#')
@@ -39,9 +46,7 @@ def light_message(x, y, r, g, b):
 
 class Lunchbox:
     #TODO: add parameter for list of device names, otherwise autodetect
-    def __init__(self, in_devices=[], out_devices=[], on_press=lambda x, y, vel:None, on_release=lambda x, y:None, on_polytouch=lambda x, y, val:None):
-        self.in_devices = in_devices
-        self.out_devices = out_devices
+    def __init__(self, on_press=lambda x, y, vel:None, on_release=lambda x, y:None, on_polytouch=lambda x, y, val:None):
         self.on_press = on_press
         self.on_release = on_release
         self.on_polytouch = on_polytouch
@@ -85,24 +90,49 @@ class Lunchbox:
     
     def connect_to_pad(self, in_device, out_device, pad):
         in_port = mido.open_input(in_device, callback=lambda message: self.handle_message(message, pad))
-        out_port = mido.open_output(out_device)
+        try:
+            out_port = mido.open_output(out_device)
+        except:
+            traceback.print_exc()
+            in_port.close()
+            raise ValueError("Failed to fully connect to device.")
         
         enter_programmer_mode = Message("sysex", data=[0, 32, 41, 2, 12, 14, PROGRAMMER_MODE])
         out_port.send(enter_programmer_mode)
         
-        return in_port, out_port
+        self.in_ports.append(in_port)
+        self.out_ports.append(out_port)
     
     def live_mode(self, pad):
         enter_live_mode = Message("sysex", data=[0, 32, 41, 2, 12, 14, LIVE_MODE])
         self.out_ports[pad].send(enter_live_mode)
         
-    def connect(self):
+    def connect(self, in_devices, out_devices):
         #TODO: search for all launchpads and autoconnect
-        for pad, (in_device, out_device) in enumerate(zip(self.in_devices, self.out_devices)):
-            in_port, out_port = self.connect_to_pad(in_device, out_device, pad)
-            self.in_ports.append(in_port)
-            self.out_ports.append(out_port)
-        
+        for pad, (in_device, out_device) in enumerate(zip(in_devices, out_devices)):
+            self.connect_to_pad(in_device, out_device, pad)
+    
+    def autodetect(self):
+        #idk if this will always work, but its worth a try
+        in_names = [name for name in mido.get_input_names() if "LPX MIDI" in name]
+        out_names = [name for name in mido.get_output_names() if "LPX MIDI" in name]
+        in_out_pairs = list(zip(in_names, out_names))
+        in_out_pairs = [
+            (in_name, out_name) for in_name, out_name in in_out_pairs if
+            should_autodetect_device(in_name) and should_autodetect_device(out_name)
+        ]
+        #try to connect to each device, store successes in our devices
+        pads = 0
+        for in_name, out_name in in_out_pairs:
+            #try to connect to each pad pair
+            try:
+                self.connect_to_pad(in_name, out_name, pads)
+                print(f"Connected to '{in_name}' / '{out_name}'")
+                pads += 1
+            except ValueError:
+                print(f"Unable to connect to pad with input '{in_name}' and output '{out_name}'")
+                
+    
     def wait(self):
         #reset pads on sigint
         def signal_handler(sig, frame):
