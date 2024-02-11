@@ -12,7 +12,7 @@ x_offset: 4
 y_offset: 3
 #can be a single integer indicating the positive octave offset per pad,
 #or a list of relative octave offsets per pad
-# pad_octave_offsets: [-1, 1]
+pad_octave_offsets: [-1, 1]
 #output midi device to send events to
 output_device: "lunchbox 3"
 #list of colors per note, starting at C if un-transposed

@@ -16,7 +16,6 @@ V_STEP = config.get("v_step", 4)
 X_OFFSET = config.get("x_offset", 4)
 Y_OFFSET = config.get("x_offset", 3)
 #middle c is 60
-# ROOT = config.get("root", 44) #60 - 12 - 4
 ROOT = config.get("root", 24) #octave 3
 VEL_SCALE = config.get("vel_scale", 1.0)
 #can be int or list
@@ -53,38 +52,55 @@ def xy_to_note(x, y, pad):
     y += Y_OFFSET
     
     note = x * H_STEP + y * V_STEP + ROOT
+    note = note + transpose
     #adjust octave based on pad
     note = note + 12 * PAD_OCTAVE_OFFSETS[pad]
     return note
 
-def press_top_button(button):
+#TODO: per-pad transpose
+#TODO: reset to configured transpose
+def press_top_button(button, pad):
     global transpose
     print("Top button", button, "pressed")
     #octave up/down
     if button == 0:
+        print(f"transpose + 12 ({transpose})")
         transpose += 12
+        lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 1:
+        print(f"transpose - 12 ({transpose})")
         transpose -= 12
+        lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 2:
+        print(f"transpose - 1({transpose})")
         transpose -= 1
+        lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 3:
+        print(f"transpose + 1 ({transpose})")
         transpose += 1
+        lunch.light(button, 8, "#FFFFFF", pad=pad)
+    elif button == 4:
+        print(f"transpose reset ({transpose})")
+        transpose = 0
+        lunch.light(button, 8, "#FFFFFF", pad=pad)
 
-def press_right_button(button):
+def press_right_button(button, pad):
     print("Right button", button, "pressed")
 
-def release_top_button(button):
+def release_top_button(button, pad):
     print("Top button", button, "released")
+    if button >= 0 and button < 5:
+        lunch.light(button, 8, "#000000", pad=pad)
 
-def release_right_button(button):
+def release_right_button(button, pad):
     print("Right button", button, "released")
 
 def press(x, y, velocity, pad=0):
     if x == 8:
-        press_top_button(y)
+        press_right_button(y, pad)
         return
     if y == 8:
-        press_right_button(y)
+        press_top_button(x, pad)
         return
     note = xy_to_note(x, y, pad)
     print("pad", pad, "pressed", note, velocity)
@@ -96,10 +112,10 @@ def press(x, y, velocity, pad=0):
 
 def release(x, y, pad=0):
     if x == 8:
-        release_top_button(y)
+        release_right_button(y, pad)
         return
     if y == 8:
-        release_right_button(y)
+        release_top_button(x, pad)
         return
     note = xy_to_note(x, y, pad)
     #TODO: press all notes that match
