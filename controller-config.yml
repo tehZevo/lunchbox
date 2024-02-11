@@ -15,6 +15,8 @@ y_offset: 3
 pad_octave_offsets: [-1, 1]
 #output midi device to send events to
 output_device: "lunchbox 3"
+#enable the visualizer (requires pygame, see README)
+visualizer: true
 #list of colors per note, starting at C if un-transposed
 colors:
   - "#00FF00" #C

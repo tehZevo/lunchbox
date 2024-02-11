@@ -8,5 +8,8 @@ setup(name="lunchbox",
         "pyyaml"
     ],
     entry_points={"console_scripts": ["lunchbox=lunchbox.apps.controller:main"]},
+    extras_require={
+        "visualizer": ["pygame"],
+    },
     packages=find_packages()
 )

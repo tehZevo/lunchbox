@@ -20,6 +20,7 @@ Y_OFFSET = config.get("x_offset", 3)
 #middle c is 60
 ROOT = config.get("root", 24) #octave 3
 VEL_SCALE = config.get("vel_scale", 1.0)
+VISUALIZER = config.get("visualizer", False)
 #can be int or list
 PAD_OCTAVE_OFFSETS = config.get("pad_octave_offsets", 1) #[-1, 1]
 
@@ -37,7 +38,7 @@ COLORS = config.get("colors", [
     COLOR_MAJOR, COLOR_OFF, COLOR_WHITE, COLOR_OFF, COLOR_WHITE
 ])
 
-#TODO: flag for toggling each of: background colors, press colors, and velocity sensitive colors
+#TODO: flag for toggling each of: background colors, press colors, and polytouch sensitive colors
 transpose = 0
 
 OUTPUT_DEVICE = config.get("output_device", "loopMIDI Port")
@@ -53,7 +54,7 @@ def xy_to_note(x, y, pad):
     x += X_OFFSET
     y = max(0, min(y, 7))
     y += Y_OFFSET
-    
+
     note = x * H_STEP + y * V_STEP + ROOT
     note = note + transpose
     #adjust octave based on pad
@@ -70,7 +71,7 @@ def set_pad_channel(pad, channel):
     #set channel light from top down
     if channel < 8:
         lunch.light(8, 7 - channel, "#FFFFFF", pad=pad)
-    
+
     print(f"Pad {pad} changed to channel {channel}")
 
 #TODO: per-pad transpose
@@ -151,8 +152,9 @@ def polytouch(x, y, value, pad=0):
     note = xy_to_note(x, y, pad)
     for pad in range(len(lunch.out_ports)):
         for x, y in get_all_xy(note, pad):
-            lunch.light(x, y, value, value, value, pad=pad)
-    
+            pass
+            # lunch.light(x, y, value, value, value, pad=pad)
+
 def get_all_xy(note, pad):
     xy = []
     for x in range(8):
@@ -179,16 +181,16 @@ out_port = None
 
 def main():
     global PAD_OCTAVE_OFFSETS, lunch, out_port, pad_channels
-    
-    lunch = Lunchbox(press, release, polytouch)
+
+    lunch = Lunchbox(press, release, polytouch, visualizer=VISUALIZER)
     print("Availalable midi devices:")
     lunch.list_devices()
-    
+
     if AUTODETECT:
         lunch.autodetect()
     else:
         lunch.connect(IN_DEVICES, OUT_DEVICES)
-    
+
     if len(lunch.connected_devices) == 0:
         print("No devices connected to Lunchbox, exiting.")
         exit(0)
@@ -196,11 +198,11 @@ def main():
     #TODO: test
     if type(PAD_OCTAVE_OFFSETS) == int:
         PAD_OCTAVE_OFFSETS = [PAD_OCTAVE_OFFSETS * i for i in range(len(lunch.out_ports))]
-    
+
     pad_channels = [0 for _ in lunch.connected_devices]
     for pad, channel in enumerate(pad_channels):
         set_pad_channel(pad, channel)
-    
+
     out_port = mido.open_output(OUTPUT_DEVICE)
     reset_lights()
 
