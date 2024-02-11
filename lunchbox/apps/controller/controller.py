@@ -44,6 +44,8 @@ AUTODETECT = config.get("autodetect", True)
 IN_DEVICES = config.get("in_devices", [])
 OUT_DEVICES = config.get("out_devices", [])
 
+pad_channels = []
+
 def xy_to_note(x, y, pad):
     #TODO: test offsets
     x = max(0, min(x, 7))
@@ -56,6 +58,17 @@ def xy_to_note(x, y, pad):
     #adjust octave based on pad
     note = note + 12 * PAD_OCTAVE_OFFSETS[pad]
     return note
+
+#TODO: use right buttons to choose midi output channel
+
+def set_pad_channel(pad, channel):
+    pad_channels[pad] = channel
+    #reset lights
+    for i in range(8):
+        lunch.light(8, i, "#000000", pad=pad)
+    #set channel light from top down
+    if channel < 8:
+        lunch.light(8, 7 - channel, "#FFFFFF", pad=pad)
 
 #TODO: per-pad transpose
 #TODO: reset to configured transpose
@@ -86,6 +99,7 @@ def press_top_button(button, pad):
 
 def press_right_button(button, pad):
     print("Right button", button, "pressed")
+    set_pad_channel(pad, 7 - button)
 
 def release_top_button(button, pad):
     print("Top button", button, "released")
@@ -105,7 +119,7 @@ def press(x, y, velocity, pad=0):
     note = xy_to_note(x, y, pad)
     print("pad", pad, "pressed", note, velocity)
     velocity = int((1 - VEL_SCALE) * 127) + int(velocity * VEL_SCALE)
-    out_port.send(Message("note_on", note=note, velocity=velocity))
+    out_port.send(Message("note_on", note=note, velocity=velocity, channel=pad_channels[pad]))
     for pad in range(len(lunch.out_ports)):
         for x, y in get_all_xy(note, pad):
             lunch.light(x, y, "#FFFFFF", pad=pad)
@@ -120,7 +134,7 @@ def release(x, y, pad=0):
     note = xy_to_note(x, y, pad)
     #TODO: press all notes that match
     print("pad", pad, "released", note)
-    out_port.send(Message("note_on", note=note, velocity=0))
+    out_port.send(Message("note_on", note=note, velocity=0, channel=pad_channels[pad]))
     for pad in range(len(lunch.out_ports)):
         for x, y in get_all_xy(note, pad):
             lunch.light(x, y, get_natural_color(x, y, pad), pad=pad)
@@ -156,7 +170,7 @@ lunch = None
 out_port = None
 
 def main():
-    global PAD_OCTAVE_OFFSETS, lunch, out_port
+    global PAD_OCTAVE_OFFSETS, lunch, out_port, pad_channels
     
     lunch = Lunchbox(press, release, polytouch)
     print("Availalable midi devices:")
@@ -174,7 +188,11 @@ def main():
     #TODO: test
     if type(PAD_OCTAVE_OFFSETS) == int:
         PAD_OCTAVE_OFFSETS = [PAD_OCTAVE_OFFSETS * i for i in range(len(lunch.out_ports))]
-
+    
+    pad_channels = [0 for _ in lunch.connected_devices]
+    for pad, channel in enumerate(pad_channels):
+        set_pad_channel(pad, channel)
+    
     out_port = mido.open_output(OUTPUT_DEVICE)
     reset_lights()
 
