@@ -4,7 +4,7 @@
 ## Installing
 `pip install git+https://github.com/tehzevo/lunchbox.git`
 
-### Included controller app
+## Included controller app
 Run via `python -m lunchbox.apps.controller`
 * Isomorphic layout
 * Supports multiple Launchpad Xs
