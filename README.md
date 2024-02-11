@@ -5,11 +5,13 @@
 `pip install git+https://github.com/tehzevo/lunchbox.git`
 
 ## Controller
-The included controller script is a configurable isomorphic layout controller. To run the script, run `$ lunchbox`.
-In this mode, the up/down arrows transpose up/down an octave, and the left/right transpose up/down by one semitone.
-Press the *Session* button to reset transpose to default.
-The controller should autodetect all connected Launchpad X and give them a (configurable) octave offset.
-Create a `controller-config.yml` to configure and take a look at this repo's `controller-config.yml` for more configuration options.
+To run the controller script, run `$ lunchbox`.
+
+### Features
+* Configurable isomorphic layout - see `controller-config.yml` for an example
+* Launchpad X autodetection with each Launchpad getting its own (configurable) octave offset
+* Transposing: up/down arrows transpose octaves, left/right arrows transpose semitones, and *Session* resets transpose to 0
+* 8-midi channel selection - right-side buttons function as midi channel selection
 
 ## API
 *See `example.py`*
