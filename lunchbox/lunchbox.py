@@ -12,6 +12,10 @@ LIVE_MODE = 0
 LIGHT_SYSEX = [0, 32, 41, 2, 12, 3]
 RGB_LIGHT_TYPE = 3
 
+def hex_to_rgb(hex):
+    hex = hex.lstrip('#')
+    return tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
+
 def note_to_xy(note):
     x = (note % 10) - 1
     y = (note // 10) - 1
@@ -42,7 +46,10 @@ class Lunchbox:
         self.in_ports = []
         self.out_ports = []
     
-    def light(self, x, y, r, g, b, pad=0):
+    def light(self, x, y, r, g=None, b=None, pad=0):
+        #assume hex
+        if g is None:
+            r, g, b = hex_to_rgb(r)
         x = max(0, min(x, 8))
         y = max(0, min(y, 8))
         message = light_message(x, y, r, g, b)

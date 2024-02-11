@@ -1,23 +1,25 @@
 from lunchbox import Lunchbox
 
 def press(x, y, velocity, pad=0):
+    lunch.light(x, y, "#00fF00", pad=pad)
     print("pad", pad, "pressed", x, y, velocity)
 
 def release(x, y, pad=0):
+    lunch.light(x, y, 0, 0, 0, pad=pad)
     print("pad", pad, "released", x, y)
 
 def polytouch(x, y, value, pad=0):
-    lunch.light(x, y, value, value, value, pad=pad)
+    #lunch.light(x, y, value, value, value, pad=pad)
     print("pad", pad, "polytouch", x, y, value)
 
 
 in_devices = [
-    "MIDIIN2 (LPX MIDI) 1",
-    "MIDIIN4 (LPX MIDI) 3",
+    "MIDIIN2 (LPX MIDI) 4",
+    "MIDIIN4 (LPX MIDI) 6",
 ]
 out_devices = [
-    "MIDIOUT2 (LPX MIDI) 2",
-    "MIDIOUT4 (LPX MIDI) 4",
+    "MIDIOUT2 (LPX MIDI) 5",
+    "MIDIOUT4 (LPX MIDI) 7",
 ]
 
 lunch = Lunchbox(in_devices, out_devices, press, release, polytouch)
