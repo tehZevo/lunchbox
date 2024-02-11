@@ -91,19 +91,23 @@ def reset_lights():
             for pad in range(len(lunch.out_ports)):
                 lunch.light(x, y, get_natural_color(x, y, pad), pad=pad)
 
+def main():
+    lunch = Lunchbox(press, release, polytouch)
+    lunch.list_devices()
+    
+    if AUTODETECT:
+        lunch.autodetect()
+    else:
+        lunch.connect(IN_DEVICES, OUT_DEVICES)
 
-lunch = Lunchbox(press, release, polytouch)
-lunch.list_devices()
-if AUTODETECT:
-    lunch.autodetect()
-else:
-    lunch.connect(IN_DEVICES, OUT_DEVICES)
+    #TODO: test
+    if type(PAD_OCTAVE_OFFSETS) == int:
+        PAD_OCTAVE_OFFSETS = [PAD_OCTAVE_OFFSETS * i for i in range(lunch.out_ports)]
 
-#TODO: test
-if type(PAD_OCTAVE_OFFSETS) == int:
-    PAD_OCTAVE_OFFSETS = [PAD_OCTAVE_OFFSETS * i for i in range(lunch.out_ports)]
+    out_port = mido.open_output(OUTPUT_DEVICE)
+    reset_lights()
 
-out_port = mido.open_output(OUTPUT_DEVICE)
-reset_lights()
+    lunch.wait()
 
-lunch.wait()
+if __name__ == "__main__":
+    main()

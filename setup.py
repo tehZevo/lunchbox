@@ -7,6 +7,6 @@ setup(name="lunchbox",
         "python-rtmidi",
         "pyyaml"
     ],
-    entry_points={"console_scripts": ["lunchbox=lunchbox.apps.controller"]},
+    entry_points={"console_scripts": ["lunchbox=lunchbox.apps.controller:main"]},
     packages=find_packages()
 )
