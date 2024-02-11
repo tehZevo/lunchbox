@@ -106,7 +106,7 @@ def main():
 
     #TODO: test
     if type(PAD_OCTAVE_OFFSETS) == int:
-        PAD_OCTAVE_OFFSETS = [PAD_OCTAVE_OFFSETS * i for i in range(lunch.out_ports)]
+        PAD_OCTAVE_OFFSETS = [PAD_OCTAVE_OFFSETS * i for i in range(len(lunch.out_ports))]
 
     out_port = mido.open_output(OUTPUT_DEVICE)
     reset_lights()
