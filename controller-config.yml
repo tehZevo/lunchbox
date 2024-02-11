@@ -1,0 +1,33 @@
+#horizontal grid step in semitones
+h_step: 1
+#vertical grid step in semitones; this results in a configuration
+#where the major 3rd is directly above
+v_step: 4
+#root midi note
+root: 44
+#velocity scaling; lower values "squish" the velocity space towards max velocity
+vel_scale: 0.5
+#can be a single integer indicating the positive octave offset per pad,
+#or a list of relative octave offsets per pad
+pad_octave_offsets: [-1, 1]
+#output midi device to send events to
+output_device: "lunchbox 3"
+#list of colors per note, starting at C if un-transposed
+colors:
+  - "#00FF00" #C
+  - "#000000"
+  - "#330500" #D
+  - "#000000"
+  - "#0000FF" #E
+  - "#330500" #F
+  - "#000000"
+  - "#0000FF" #G
+  - "#000000"
+  - "#330500" #A
+  - "#000000"
+  - "#330500" #B
+
+#TODO: test manual device listing
+# autodetect: false
+# in_devices: []
+# out_devices: []

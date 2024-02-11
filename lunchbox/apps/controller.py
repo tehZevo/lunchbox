@@ -1,34 +1,42 @@
 import mido
 from mido import Message
 
+import yaml
+
 from lunchbox import Lunchbox
 
-#TODO: cli args
+try:
+    with open("controller-config.yml") as f:
+        config = yaml.safe_load(f)
+except:
+    config = {}
 
-H_STEP = 1
-V_STEP = 4
+H_STEP = config.get("h_step", 1)
+V_STEP = config.get("v_step", 4)
 #middle c is 60
-ROOT = 60 - 12 - 4
-VEL_SCALE = 0.5
-PAD_OCTAVE_OFFSETS = [-1, 1]
+ROOT = config.get("root", 44) #60 - 12 - 4
+VEL_SCALE = config.get("vel_scale", 1.0)
+#can be int or list
+PAD_OCTAVE_OFFSETS = config.get("pad_octave_offsets", 1) #[-1, 1]
 
 COLOR_ROOT = "#00FF00"
 COLOR_OFF = "#000000"
 COLOR_MAJOR = "#0000FF"
 COLOR_WHITE = "#330500"
-
 #starting at C when untransposed
-lights = [
+COLORS = config.get("colors", [
     #C C# D D#
     COLOR_ROOT, COLOR_OFF, COLOR_WHITE, COLOR_OFF,
     #E F F#
     COLOR_MAJOR, COLOR_WHITE, COLOR_OFF,
     #G G# A A# B
     COLOR_MAJOR, COLOR_OFF, COLOR_WHITE, COLOR_OFF, COLOR_WHITE
-]
+])
 
-
-MIDO_DEVICE = "lunchbox 3"
+OUTPUT_DEVICE = config.get("output_device", "loopMIDI Port")
+AUTODETECT = config.get("autodetect", True)
+IN_DEVICES = config.get("in_devices", [])
+OUT_DEVICES = config.get("out_devices", [])
 
 def xy_to_note(x, y, pad):
     x = max(0, min(x, 7))
@@ -74,7 +82,7 @@ def get_all_xy(note, pad):
 def get_natural_color(x, y, pad):
     note = xy_to_note(x, y, pad)
     note = note % 12
-    color = lights[note]
+    color = COLORS[note]
     return color
 
 def reset_lights():
@@ -86,9 +94,16 @@ def reset_lights():
 
 lunch = Lunchbox(press, release, polytouch)
 lunch.list_devices()
-lunch.autodetect()
+if AUTODETECT:
+    lunch.autodetect()
+else:
+    lunch.connect(IN_DEVICES, OUT_DEVICES)
 
-out_port = mido.open_output(MIDO_DEVICE)
+#TODO: test
+if type(PAD_OCTAVE_OFFSETS) == int:
+    PAD_OCTAVE_OFFSETS = [PAD_OCTAVE_OFFSETS * i for i in range(lunch.out_ports)]
+
+out_port = mido.open_output(OUTPUT_DEVICE)
 reset_lights()
 
 lunch.wait()

@@ -3,3 +3,4 @@
 
 ## TODO
 - stop swallowing exceptions (mido issue?)
+- unplug/replug detection

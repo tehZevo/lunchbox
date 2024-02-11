@@ -5,5 +5,6 @@ setup(name="lunchbox",
   install_requires = [
     "mido",
     "python-rtmidi",
+    "pyyaml"
   ],
   packages=find_packages())
