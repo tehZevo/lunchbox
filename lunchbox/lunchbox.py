@@ -12,7 +12,10 @@ def note_to_xy(note):
     return x, y
 
 class Lunchbox:
-    def __init__(self, on_press=lambda x, y, vel:None, on_release=lambda x, y:None, on_polytouch=lambda x, y, val:None):
+    #TODO: add parameter for list of device names, otherwise autodetect
+    def __init__(self, in_devices=[], out_devices=[], on_press=lambda x, y, vel:None, on_release=lambda x, y:None, on_polytouch=lambda x, y, val:None):
+        self.in_devices = in_devices
+        self.out_devices = out_devices
         #TODO: make these support a pad number
         self.on_press = on_press
         self.on_release = on_release
@@ -35,11 +38,23 @@ class Lunchbox:
                 self.on_press(x, y, message.value)
             else:
                 self.on_release(x, y)
-                
+    
+    def list_devices(self):
+        print("Input devices:")
+        for device in mido.get_input_names():
+            print("-", device)
+        
+        print("Output devices:")
+        for device in mido.get_output_names():
+            print("-", device)
+    
     def connect(self):
         #TODO: search for all launchpads and autoconnect
-        self.inport = mido.open_input("MIDIIN2 (LPX MIDI) 3", callback=lambda message: self.handle_message(message))
-        self.outport = mido.open_output("MIDIOUT2 (LPX MIDI) 4")
+        in_device = self.in_devices[0]
+        out_device = self.out_devices[0]
+        #TODO: support multiple devices here
+        self.inport = mido.open_input(in_device, callback=lambda message: self.handle_message(message))
+        self.outport = mido.open_output(out_device)
         
         enter_programmer_mode = Message("sysex", data=[0, 32, 41, 2, 12, 14, PROGRAMMER_MODE])
         #TODO: auto exit prog mode on sigint

@@ -20,6 +20,10 @@ def polytouch(x, y, value):
     print("polytouch", x, y, value)
 
 
-lunch = Lunchbox(press, release, polytouch)
+in_device = "MIDIIN2 (LPX MIDI) 3"
+out_device = "MIDIOUT2 (LPX MIDI) 4"
+
+lunch = Lunchbox([in_device], [out_device], press, release, polytouch)
+lunch.list_devices()
 lunch.connect()
 lunch.wait()
