@@ -49,7 +49,6 @@ class Lunchbox:
         self.out_ports[pad].send(message)
         
     def handle_message(self, message, pad):
-        print(pad)
         if message.type == "note_on":
             x, y = note_to_xy(message.note)
             if message.velocity > 0:
