@@ -11,6 +11,8 @@ try:
 except:
     config = {}
 
+DEBUG = False
+
 H_STEP = config.get("h_step", 1)
 V_STEP = config.get("v_step", 4)
 X_OFFSET = config.get("x_offset", 4)
@@ -75,40 +77,44 @@ def set_pad_channel(pad, channel):
 #TODO: reset to configured transpose
 def press_top_button(button, pad):
     global transpose
-    print("Top button", button, "pressed")
+    if DEBUG:
+        print("Top button", button, "pressed")
     #octave up/down
     if button == 0:
         transpose += 12
-        print(f"transpose + 12 ({transpose})")
+        print(f"Transpose + 12 ({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 1:
         transpose -= 12
-        print(f"transpose - 12 ({transpose})")
+        print(f"Transpose - 12 ({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 2:
         transpose -= 1
-        print(f"transpose - 1({transpose})")
+        print(f"Transpose - 1({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 3:
         transpose += 1
-        print(f"transpose + 1 ({transpose})")
+        print(f"Transpose + 1 ({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 4:
         transpose = 0
-        print(f"transpose reset ({transpose})")
+        print(f"Transpose reset ({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
 
 def press_right_button(button, pad):
-    print("Right button", button, "pressed")
+    if DEBUG:
+        print("Right button", button, "pressed")
     set_pad_channel(pad, 7 - button)
 
 def release_top_button(button, pad):
-    print("Top button", button, "released")
+    if DEBUG:
+        print("Top button", button, "released")
     if button >= 0 and button < 5:
         lunch.light(button, 8, "#000000", pad=pad)
 
 def release_right_button(button, pad):
-    print("Right button", button, "released")
+    if DEBUG:
+        print("Right button", button, "released")
 
 def press(x, y, velocity, pad=0):
     if x == 8:
@@ -118,7 +124,8 @@ def press(x, y, velocity, pad=0):
         press_top_button(x, pad)
         return
     note = xy_to_note(x, y, pad)
-    print("pad", pad, "pressed", note, velocity)
+    if DEBUG:
+        print("pad", pad, "pressed", note, velocity)
     velocity = int((1 - VEL_SCALE) * 127) + int(velocity * VEL_SCALE)
     out_port.send(Message("note_on", note=note, velocity=velocity, channel=pad_channels[pad]))
     for pad in range(len(lunch.out_ports)):
@@ -133,7 +140,8 @@ def release(x, y, pad=0):
         release_top_button(x, pad)
         return
     note = xy_to_note(x, y, pad)
-    print("pad", pad, "released", note)
+    if DEBUG:
+        print("pad", pad, "released", note)
     out_port.send(Message("note_on", note=note, velocity=0, channel=pad_channels[pad]))
     for pad in range(len(lunch.out_ports)):
         for x, y in get_all_xy(note, pad):
