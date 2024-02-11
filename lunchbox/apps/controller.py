@@ -61,10 +61,9 @@ def release(x, y, pad=0):
     #TODO: press all notes that match
     print("pad", pad, "released", note)
     out_port.send(Message("note_on", note=note, velocity=0))
-    for pad in range(len(IN_DEVICES)):
+    for pad in range(len(lunch.out_ports)):
         for x, y in get_all_xy(note, pad):
             lunch.light(x, y, get_natural_color(x, y, pad), pad=pad)
-    # lunch.light(x, y, get_natural_color(x, y, pad), pad=pad)
 
 def polytouch(x, y, value, pad=0):
     pass
