@@ -40,6 +40,7 @@ for r in range(4):
             b2 = b / 4 * 255
             lunch.light(x, y, r2, g2, b2)
 
-lunch.light(8, 9, 0, 255, 0)
+#light up logo
+lunch.light(8, 8, 0, 255, 0)
 
 lunch.wait()
