@@ -8,10 +8,17 @@ PAD_BORDER = 20
 
 class VirtualLaunchpad:
     def __init__(self):
-        self.buttons = [[(0, 0, 0) for _ in range(9)] for _ in range(9)]
+        self.button_colors = [[(0, 0, 0) for _ in range(9)] for _ in range(9)]
+        self.button_states = [[False for _ in range(9)] for _ in range(9)]
 
     def set_color(self, x, y, rgb):
-        self.buttons[y][x] = rgb
+        self.button_colors[y][x] = rgb
+
+    def press(self, x, y):
+        self.button_states[y][x] = True
+
+    def release(self, x, y):
+        self.button_states[y][x] = False
 
 class Visualizer:
     def __init__(self):
@@ -20,19 +27,22 @@ class Visualizer:
         pygame.display.set_caption("Lunchbox")
         self.pads = []
 
-    def draw_button(self, x, y, pad, color):
+    def draw_button(self, x, y, pad, color, pressed):
         y = 8 - y
-        #TODO: pad offset
         rect = pygame.Rect(x * BUTTON_SIZE + pad * 10 * BUTTON_SIZE, y * BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE)
         pygame.draw.rect(self.screen, color, rect)
-        pygame.draw.rect(self.screen, (40, 40, 40), rect, width=4)
+        if pressed:
+            pygame.draw.rect(self.screen, (255, 40, 40), rect, width=4)
+        else:
+            pygame.draw.rect(self.screen, (40, 40, 40), rect, width=4)
 
     def draw(self):
         for i, pad in enumerate(self.pads):
             for x in range(9):
                 for y in range(9):
-                    color = pad.buttons[y][x]
-                    self.draw_button(x, y, i, color)
+                    color = pad.button_colors[y][x]
+                    pressed = pad.button_states[y][x]
+                    self.draw_button(x, y, i, color, pressed)
 
     def step(self):
         self.screen.fill((0, 0, 0))

@@ -84,8 +84,12 @@ class Lunchbox:
             x, y = note_to_xy(message.note)
             if message.velocity > 0:
                 self.on_press(x, y, message.velocity, pad=pad)
+                if self.visualizer:
+                    self.visualizer.pads[pad].press(x, y)
             else:
                 self.on_release(x, y, pad=pad)
+                if self.visualizer:
+                    self.visualizer.pads[pad].release(x, y)
         if message.type == "polytouch":
             x, y = note_to_xy(message.note)
             self.on_polytouch(x, y, message.value, pad=pad)
@@ -93,8 +97,12 @@ class Lunchbox:
             x, y = note_to_xy(message.control)
             if message.value > 0:
                 self.on_press(x, y, message.value, pad=pad)
+                if self.visualizer:
+                    self.visualizer.pads[pad].press(x, y)
             else:
                 self.on_release(x, y, pad=pad)
+                if self.visualizer:
+                    self.visualizer.pads[pad].release(x, y)
 
     def list_devices(self):
         print("Input devices:")
