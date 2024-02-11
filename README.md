@@ -13,6 +13,10 @@ Run via `python -m lunchbox.apps.controller`
 ## API
 *See `example.py`*
 
+## Authors
+* [tehZevo](https://github.com/tehZevo)
+* [Kaydax](https://github.com/Kaydax)
+
 ## TODO
 - stop swallowing exceptions (mido issue?)
 - unplug/replug detection
