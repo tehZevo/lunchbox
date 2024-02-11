@@ -108,19 +108,14 @@ class Lunchbox:
         self.out_ports[pad].send(enter_live_mode)
         
     def connect(self, in_devices, out_devices):
-        #TODO: search for all launchpads and autoconnect
         for pad, (in_device, out_device) in enumerate(zip(in_devices, out_devices)):
             self.connect_to_pad(in_device, out_device, pad)
     
     def autodetect(self):
         #idk if this will always work, but its worth a try
-        in_names = [name for name in mido.get_input_names() if "LPX MIDI" in name]
-        out_names = [name for name in mido.get_output_names() if "LPX MIDI" in name]
+        in_names = [name for name in mido.get_input_names() if should_autodetect_device(name)]
+        out_names = [name for name in mido.get_output_names() if should_autodetect_device(name)]
         in_out_pairs = list(zip(in_names, out_names))
-        in_out_pairs = [
-            (in_name, out_name) for in_name, out_name in in_out_pairs if
-            should_autodetect_device(in_name) and should_autodetect_device(out_name)
-        ]
         #try to connect to each device, store successes in our devices
         pads = 0
         for in_name, out_name in in_out_pairs:
