@@ -91,8 +91,10 @@ def reset_lights():
             for pad in range(len(lunch.out_ports)):
                 lunch.light(x, y, get_natural_color(x, y, pad), pad=pad)
 
+lunch = None
+
 def main():
-    global PAD_OCTAVE_OFFSETS
+    global PAD_OCTAVE_OFFSETS, lunch
     
     lunch = Lunchbox(press, release, polytouch)
     lunch.list_devices()
