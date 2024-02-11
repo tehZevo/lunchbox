@@ -3,6 +3,8 @@ from mido import Message
 
 from lunchbox import Lunchbox
 
+#TODO: cli args
+
 H_STEP = 1
 V_STEP = 4
 #middle c is 60
