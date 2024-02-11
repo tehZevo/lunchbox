@@ -117,10 +117,7 @@ class Lunchbox:
         
         self.in_ports.append(in_port)
         self.out_ports.append(out_port)
-        self.connected_devices.append({
-            "in": in_device,
-            "out": out_device
-        })
+        self.connected_devices.append([in_device, out_device])
     
     def live_mode(self, pad):
         enter_live_mode = Message("sysex", data=[0, 32, 41, 2, 12, 14, LIVE_MODE])

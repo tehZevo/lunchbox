@@ -13,8 +13,11 @@ except:
 
 H_STEP = config.get("h_step", 1)
 V_STEP = config.get("v_step", 4)
+X_OFFSET = config.get("x_offset", 4)
+Y_OFFSET = config.get("x_offset", 3)
 #middle c is 60
-ROOT = config.get("root", 44) #60 - 12 - 4
+# ROOT = config.get("root", 44) #60 - 12 - 4
+ROOT = config.get("root", 24) #octave 3
 VEL_SCALE = config.get("vel_scale", 1.0)
 #can be int or list
 PAD_OCTAVE_OFFSETS = config.get("pad_octave_offsets", 1) #[-1, 1]
@@ -33,20 +36,56 @@ COLORS = config.get("colors", [
     COLOR_MAJOR, COLOR_OFF, COLOR_WHITE, COLOR_OFF, COLOR_WHITE
 ])
 
+#TODO: flag for toggling each of: background colors, press colors, and velocity sensitive colors
+#TODO: transpose
+transpose = 0
+
 OUTPUT_DEVICE = config.get("output_device", "loopMIDI Port")
 AUTODETECT = config.get("autodetect", True)
 IN_DEVICES = config.get("in_devices", [])
 OUT_DEVICES = config.get("out_devices", [])
 
 def xy_to_note(x, y, pad):
+    #TODO: test offsets
     x = max(0, min(x, 7))
+    x += X_OFFSET
     y = max(0, min(y, 7))
+    y += Y_OFFSET
+    
     note = x * H_STEP + y * V_STEP + ROOT
     #adjust octave based on pad
     note = note + 12 * PAD_OCTAVE_OFFSETS[pad]
     return note
 
+def press_top_button(button):
+    global transpose
+    print("Top button", button, "pressed")
+    #octave up/down
+    if button == 0:
+        transpose += 12
+    elif button == 1:
+        transpose -= 12
+    elif button == 2:
+        transpose -= 1
+    elif button == 3:
+        transpose += 1
+
+def press_right_button(button):
+    print("Right button", button, "pressed")
+
+def release_top_button(button):
+    print("Top button", button, "released")
+
+def release_right_button(button):
+    print("Right button", button, "released")
+
 def press(x, y, velocity, pad=0):
+    if x == 8:
+        press_top_button(y)
+        return
+    if y == 8:
+        press_right_button(y)
+        return
     note = xy_to_note(x, y, pad)
     print("pad", pad, "pressed", note, velocity)
     velocity = int((1 - VEL_SCALE) * 127) + int(velocity * VEL_SCALE)
@@ -56,6 +95,12 @@ def press(x, y, velocity, pad=0):
             lunch.light(x, y, "#FFFFFF", pad=pad)
 
 def release(x, y, pad=0):
+    if x == 8:
+        release_top_button(y)
+        return
+    if y == 8:
+        release_right_button(y)
+        return
     note = xy_to_note(x, y, pad)
     #TODO: press all notes that match
     print("pad", pad, "released", note)
@@ -92,9 +137,10 @@ def reset_lights():
                 lunch.light(x, y, get_natural_color(x, y, pad), pad=pad)
 
 lunch = None
+out_port = None
 
 def main():
-    global PAD_OCTAVE_OFFSETS, lunch
+    global PAD_OCTAVE_OFFSETS, lunch, out_port
     
     lunch = Lunchbox(press, release, polytouch)
     print("Availalable midi devices:")
@@ -108,8 +154,6 @@ def main():
     if len(lunch.connected_devices) == 0:
         print("No devices connected to Lunchbox, exiting.")
         exit(0)
-        
-    lunch.list_connected_devices()
 
     #TODO: test
     if type(PAD_OCTAVE_OFFSETS) == int:

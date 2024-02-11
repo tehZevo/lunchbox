@@ -20,3 +20,4 @@ Run `$ lunchbox`
 ## TODO
 - stop swallowing exceptions (mido issue?)
 - unplug/replug detection
+- visualizer for controller

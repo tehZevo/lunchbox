@@ -4,9 +4,12 @@ h_step: 1
 #where the major 3rd is directly above
 v_step: 4
 #root midi note
-root: 44
+root: 24
 #velocity scaling; lower values "squish" the velocity space towards max velocity
 vel_scale: 0.5
+#amount to offset (right/up) the root note
+x_offset: 4
+y_offset: 3
 #can be a single integer indicating the positive octave offset per pad,
 #or a list of relative octave offsets per pad
 # pad_octave_offsets: [-1, 1]
