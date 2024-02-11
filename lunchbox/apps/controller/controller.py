@@ -69,6 +69,8 @@ def set_pad_channel(pad, channel):
     #set channel light from top down
     if channel < 8:
         lunch.light(8, 7 - channel, "#FFFFFF", pad=pad)
+    
+    print(f"Pad {pad} changed to channel {channel}")
 
 #TODO: per-pad transpose
 #TODO: reset to configured transpose
@@ -77,24 +79,24 @@ def press_top_button(button, pad):
     print("Top button", button, "pressed")
     #octave up/down
     if button == 0:
-        print(f"transpose + 12 ({transpose})")
         transpose += 12
+        print(f"transpose + 12 ({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 1:
-        print(f"transpose - 12 ({transpose})")
         transpose -= 12
+        print(f"transpose - 12 ({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 2:
-        print(f"transpose - 1({transpose})")
         transpose -= 1
+        print(f"transpose - 1({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 3:
-        print(f"transpose + 1 ({transpose})")
         transpose += 1
+        print(f"transpose + 1 ({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
     elif button == 4:
-        print(f"transpose reset ({transpose})")
         transpose = 0
+        print(f"transpose reset ({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
 
 def press_right_button(button, pad):
@@ -132,7 +134,6 @@ def release(x, y, pad=0):
         release_top_button(x, pad)
         return
     note = xy_to_note(x, y, pad)
-    #TODO: press all notes that match
     print("pad", pad, "released", note)
     out_port.send(Message("note_on", note=note, velocity=0, channel=pad_channels[pad]))
     for pad in range(len(lunch.out_ports)):
