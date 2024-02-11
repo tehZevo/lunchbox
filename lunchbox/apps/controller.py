@@ -11,20 +11,11 @@ V_STEP = 4
 ROOT = 60 - 12 - 4
 VEL_SCALE = 0.5
 PAD_OCTAVE_OFFSETS = [-1, 1]
-# 
-# IN_DEVICES = [
-#     "MIDIIN2 (LPX MIDI) 4",
-#     "MIDIIN4 (LPX MIDI) 6",
-# ]
-# OUT_DEVICES = [
-#     "MIDIOUT2 (LPX MIDI) 5",
-#     "MIDIOUT4 (LPX MIDI) 7",
-# ]
 
 COLOR_ROOT = "#00FF00"
 COLOR_OFF = "#000000"
 COLOR_MAJOR = "#0000FF"
-COLOR_WHITE = "#220500"
+COLOR_WHITE = "#330500"
 
 #starting at C when untransposed
 lights = [
@@ -66,9 +57,10 @@ def release(x, y, pad=0):
             lunch.light(x, y, get_natural_color(x, y, pad), pad=pad)
 
 def polytouch(x, y, value, pad=0):
-    pass
-    # lunch.light(x, y, value, value, value, pad=pad)
-    # print("pad", pad, "polytouch", x, y, value)
+    note = xy_to_note(x, y, pad)
+    for pad in range(len(lunch.out_ports)):
+        for x, y in get_all_xy(note, pad):
+            lunch.light(x, y, value, value, value, pad=pad)
     
 def get_all_xy(note, pad):
     xy = []
@@ -90,8 +82,6 @@ def reset_lights():
         for y in range(8):
             for pad in range(len(lunch.out_ports)):
                 lunch.light(x, y, get_natural_color(x, y, pad), pad=pad)
-
-
 
 
 lunch = Lunchbox(press, release, polytouch)
