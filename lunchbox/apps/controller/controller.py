@@ -36,7 +36,6 @@ COLORS = config.get("colors", [
 ])
 
 #TODO: flag for toggling each of: background colors, press colors, and velocity sensitive colors
-#TODO: transpose
 transpose = 0
 
 OUTPUT_DEVICE = config.get("output_device", "loopMIDI Port")
@@ -157,7 +156,7 @@ def get_all_xy(note, pad):
 
 def get_natural_color(x, y, pad):
     note = xy_to_note(x, y, pad)
-    note = note % 12
+    note = (note - transpose) % 12
     color = COLORS[note]
     return color
 
