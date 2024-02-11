@@ -11,6 +11,22 @@ def note_to_xy(note):
     y = (note // 10) - 1
     return x, y
 
+def xy_to_note(x, y):
+    return (y + 1) * 10 + (x + 1)
+
+def round_color(x):
+    return int(max(0, min(x / 255, 1) * 127))
+    
+def light_message(x, y, r, g, b):
+    r = round_color(r)
+    g = round_color(g)
+    b = round_color(b)
+    index = xy_to_note(x, y)
+    LIGHT_SYSEX = [0, 32, 41, 2, 12, 3]
+    RGB_LIGHT_TYPE = 3
+    return Message("sysex", data=[*LIGHT_SYSEX, RGB_LIGHT_TYPE, index, r, g, b])
+
+
 class Lunchbox:
     #TODO: add parameter for list of device names, otherwise autodetect
     def __init__(self, in_devices=[], out_devices=[], on_press=lambda x, y, vel:None, on_release=lambda x, y:None, on_polytouch=lambda x, y, val:None):
@@ -20,6 +36,12 @@ class Lunchbox:
         self.on_press = on_press
         self.on_release = on_release
         self.on_polytouch = on_polytouch
+    
+    def light(self, x, y, r, g, b, pad=0):
+        x = max(0, min(x, 8))
+        y = max(0, min(y, 8))
+        message = light_message(x, y, r, g, b)
+        self.outport.send(message)
         
     def handle_message(self, message, pad):
         # print(message)

@@ -26,4 +26,20 @@ out_device = "MIDIOUT2 (LPX MIDI) 4"
 lunch = Lunchbox([in_device], [out_device], press, release, polytouch)
 lunch.list_devices()
 lunch.connect()
+
+for r in range(4):
+    for g in range(4):
+        for b in range(4):
+            bx = b % 2
+            by = b // 2
+            x = r + bx * 4
+            y = g + by * 4
+            print(r, g, b, x, y)
+            r2 = r / 4 * 255
+            g2 = g / 4 * 255
+            b2 = b / 4 * 255
+            lunch.light(x, y, r2, g2, b2)
+
+lunch.light(8, 9, 0, 255, 0)
+
 lunch.wait()
