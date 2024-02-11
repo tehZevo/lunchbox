@@ -11,15 +11,15 @@ V_STEP = 4
 ROOT = 60 - 12 - 4
 VEL_SCALE = 0.5
 PAD_OCTAVE_OFFSETS = [-1, 1]
-
-IN_DEVICES = [
-    "MIDIIN2 (LPX MIDI) 4",
-    "MIDIIN4 (LPX MIDI) 6",
-]
-OUT_DEVICES = [
-    "MIDIOUT2 (LPX MIDI) 5",
-    "MIDIOUT4 (LPX MIDI) 7",
-]
+# 
+# IN_DEVICES = [
+#     "MIDIIN2 (LPX MIDI) 4",
+#     "MIDIIN4 (LPX MIDI) 6",
+# ]
+# OUT_DEVICES = [
+#     "MIDIOUT2 (LPX MIDI) 5",
+#     "MIDIOUT4 (LPX MIDI) 7",
+# ]
 
 COLOR_ROOT = "#00FF00"
 COLOR_OFF = "#000000"
@@ -52,7 +52,7 @@ def press(x, y, velocity, pad=0):
     print("pad", pad, "pressed", note, velocity)
     velocity = int((1 - VEL_SCALE) * 127) + int(velocity * VEL_SCALE)
     out_port.send(Message("note_on", note=note, velocity=velocity))
-    for pad in range(len(IN_DEVICES)):
+    for pad in range(len(lunch.out_ports)):
         for x, y in get_all_xy(note, pad):
             lunch.light(x, y, "#FFFFFF", pad=pad)
 
@@ -89,15 +89,15 @@ def get_natural_color(x, y, pad):
 def reset_lights():
     for x in range(8):
         for y in range(8):
-            for pad in range(len(IN_DEVICES)):
+            for pad in range(len(lunch.out_ports)):
                 lunch.light(x, y, get_natural_color(x, y, pad), pad=pad)
 
 
 
 
-lunch = Lunchbox(IN_DEVICES, OUT_DEVICES, press, release, polytouch)
+lunch = Lunchbox(press, release, polytouch)
 lunch.list_devices()
-lunch.connect()
+lunch.autodetect()
 
 out_port = mido.open_output(MIDO_DEVICE)
 reset_lights()
