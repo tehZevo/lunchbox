@@ -22,7 +22,8 @@ ROOT = config.get("root", 24) #octave 3
 VEL_SCALE = config.get("vel_scale", 1.0)
 VISUALIZER = config.get("visualizer", False)
 #can be int or list
-PAD_OCTAVE_OFFSETS = config.get("pad_octave_offsets", 1) #[-1, 1]
+PAD_OCTAVE_OFFSETS = config.get("pad_octave_offsets", 1)
+SPLIT_MODE = config.get("split_mode", 0)
 
 COLOR_ROOT = "#00FF00"
 COLOR_OFF = "#000000"
@@ -49,13 +50,19 @@ OUT_DEVICES = config.get("out_devices", [])
 pad_channels = []
 
 def xy_to_note(x, y, pad):
+    orig_x = x
     #TODO: test offsets
     x = max(0, min(x, 7))
     x += X_OFFSET
     y = max(0, min(y, 7))
     y += Y_OFFSET
-
+    
+    if SPLIT_MODE > 0:
+        x = x % 4
+    
     note = x * H_STEP + y * V_STEP + ROOT
+    if SPLIT_MODE > 0 and orig_x >= 4:
+        note = note + 12 * SPLIT_MODE
     note = note + transpose
     #adjust octave based on pad
     note = note + 12 * PAD_OCTAVE_OFFSETS[pad]

@@ -14,7 +14,8 @@ y_offset: 3
 #or a list of relative octave offsets per pad
 pad_octave_offsets: [-1, 1]
 #output midi device to send events to
-output_device: "lunchbox 3"
+#output_device: "lunchbox 3"
+output_device: "Port-0 1"
 #enable the visualizer (requires pygame, see README)
 visualizer: true
 #list of colors per note, starting at C if un-transposed
@@ -31,6 +32,9 @@ colors:
   - "#330500" #A
   - "#000000"
   - "#330500" #B
+
+#split mode, if non-0, offset the right half of the LP by this many octaves
+split_mode: 0
 
 #TODO: test manual device listing
 # autodetect: false

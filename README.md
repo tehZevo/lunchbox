@@ -15,7 +15,7 @@ To run the controller script, run `$ lunchbox`.
 
 ## Visualizer
 For visualizer functionality, make sure to install with the visualizer extra:
-`pip install "lunchbox[visualizer] @ git+https://github.com/tehzevo/lunchbox.git"` or 
+`pip install "lunchbox[visualizer] @ git+https://github.com/tehzevo/lunchbox.git"` or
 `pip install "git+https://github.com/tehzevo/lunchbox.git#egg=lunchbox[visualizer]"`.
 Then, when creating your `Lunchbox` instance, set `Lunchbox(visualizer=True, ...)`.
 
@@ -25,6 +25,9 @@ Then, when creating your `Lunchbox` instance, set `Lunchbox(visualizer=True, ...
 ## Authors
 * [tehZevo](https://github.com/tehZevo)
 * [Kaydax](https://github.com/Kaydax)
+
+## Ideas
+- "contact point"-based notes: portamento/"throwing" notes
 
 ## TODO
 - stop swallowing exceptions (mido issue?)
