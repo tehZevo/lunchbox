@@ -43,6 +43,12 @@ def light_message(x, y, r, g, b):
     index = xy_to_note(x, y)
     return Message("sysex", data=[*LIGHT_SYSEX, RGB_LIGHT_TYPE, index, r, g, b])
 
+def find_device(devices, device):
+    device = device.lower()
+    for d in devices:
+        if device in d.lower():
+            return d
+    return None
 
 class Lunchbox:
     #TODO: add parameter for list of device names, otherwise autodetect
@@ -126,11 +132,16 @@ class Lunchbox:
         for in_device, out_device in self.connected_devices:
             print(f"- in: '{in_device}', out: '{out_device}'")
 
-
+    
     def connect_to_pad(self, in_device, out_device, pad):
-        in_port = mido.open_input(in_device, callback=lambda message: self.handle_message(message, pad))
+        in_port = mido.open_input(
+            find_device(mido.get_input_names(), in_device),
+            callback=lambda message: self.handle_message(message, pad)
+        )
         try:
-            out_port = mido.open_output(out_device)
+            out_port = mido.open_output(
+                find_device(mido.get_output_names(), out_device)
+            )
         except:
             traceback.print_exc()
             in_port.close()

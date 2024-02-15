@@ -3,7 +3,7 @@ from mido import Message
 
 import yaml
 
-from lunchbox import Lunchbox
+from lunchbox import Lunchbox, find_device
 
 try:
     with open("controller-config.yml") as f:
@@ -210,7 +210,7 @@ def main():
     for pad, channel in enumerate(pad_channels):
         set_pad_channel(pad, channel)
 
-    out_port = mido.open_output(OUTPUT_DEVICE)
+    out_port = mido.open_output(find_device(mido.get_output_names(), OUTPUT_DEVICE))
     reset_lights()
 
     lunch.wait()

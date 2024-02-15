@@ -15,23 +15,40 @@ y_offset: 3
 pad_octave_offsets: [-1, 1]
 #output midi device to send events to
 #output_device: "lunchbox 3"
-output_device: "Port-0 1"
+# output_device: "Port-0 1"
+output_device: "Port-0"
+# feedback_device: "Port-0"
 #enable the visualizer (requires pygame, see README)
 visualizer: true
 #list of colors per note, starting at C if un-transposed
+# colors:
+#   - "#00FF00" #C
+#   - "#000000"
+#   - "#330500" #D
+#   - "#000000"
+#   - "#0000FF" #E
+#   - "#330500" #F
+#   - "#000000"
+#   - "#0000FF" #G
+#   - "#000000"
+#   - "#330500" #A
+#   - "#000000"
+#   - "#330500" #B
 colors:
   - "#00FF00" #C
   - "#000000"
-  - "#330500" #D
+  - "#222222" #D
   - "#000000"
-  - "#0000FF" #E
+  - "#222222" #E
   - "#330500" #F
+  # - "#222222" #F
   - "#000000"
   - "#0000FF" #G
+  # - "#222222" #G
   - "#000000"
-  - "#330500" #A
+  - "#222222" #A
   - "#000000"
-  - "#330500" #B
+  - "#222222" #B
 
 #split mode, if non-0, offset the right half of the LP by this many octaves
 split_mode: 0
