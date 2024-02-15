@@ -37,12 +37,14 @@ COLORS = config.get("colors", [
     COLOR_MAJOR, COLOR_WHITE, COLOR_OFF,
     #G G# A A# B
     COLOR_MAJOR, COLOR_OFF, COLOR_WHITE, COLOR_OFF, COLOR_WHITE
+    # "#00000" for _ in range(12)
 ])
 
 #TODO: flag for toggling each of: background colors, press colors, and polytouch sensitive colors
 transpose = 0
 
 OUTPUT_DEVICE = config.get("output_device", "loopMIDI Port")
+FEEDBACK_DEVICE = config.get("feedback_device", None)
 AUTODETECT = config.get("autodetect", True)
 IN_DEVICES = config.get("in_devices", [])
 OUT_DEVICES = config.get("out_devices", [])
@@ -186,6 +188,28 @@ def reset_lights():
 lunch = None
 out_port = None
 
+def feedback_press(note):
+    #light up x/y that should be pressed
+    for pad in range(len(lunch.connected_devices)):
+        for x, y in get_all_xy(note, pad):
+            lunch.light(x, y, "#FFFFFF", pad=pad)
+            
+def feedback_release(note):
+    #reset lights of x/y that should be released
+    for pad in range(len(lunch.connected_devices)):
+        for x, y in get_all_xy(note, pad):
+            color = get_natural_color(x, y, pad)
+            lunch.light(x, y, color, pad=pad)
+
+def handle_feedback_message(message):
+    if message.type == "note_on":
+        if message.velocity > 0:
+            feedback_press(message.note)
+        else:
+            feedback_release(note)
+    if message.type == "note_off":
+        feedback_release(message.note)
+
 def main():
     global PAD_OCTAVE_OFFSETS, lunch, out_port, pad_channels
 
@@ -209,10 +233,18 @@ def main():
     pad_channels = [0 for _ in lunch.connected_devices]
     for pad, channel in enumerate(pad_channels):
         set_pad_channel(pad, channel)
-
+    
+    print("Opening output device...")
     out_port = mido.open_output(find_device(mido.get_output_names(), OUTPUT_DEVICE))
+    
+    feedback_port = None
+    if FEEDBACK_DEVICE is not None:
+        print("Opening feedback device...")
+        feedback_port = mido.open_input(find_device(mido.get_input_names(), FEEDBACK_DEVICE), callback=lambda message: handle_feedback_message(message))
+        
     reset_lights()
-
+    
+    print("Ready!")
     lunch.wait()
 
 if __name__ == "__main__":

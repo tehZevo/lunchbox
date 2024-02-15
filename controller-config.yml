@@ -17,7 +17,8 @@ pad_octave_offsets: [-1, 1]
 #output_device: "lunchbox 3"
 # output_device: "Port-0 1"
 output_device: "Port-0"
-# feedback_device: "Port-0"
+#midi device to listen to; the Launchpad will light up as if it were playing notes heard from this device
+# feedback_device: "lunchbox"
 #enable the visualizer (requires pygame, see README)
 visualizer: true
 #list of colors per note, starting at C if un-transposed
@@ -34,21 +35,21 @@ visualizer: true
 #   - "#330500" #A
 #   - "#000000"
 #   - "#330500" #B
-colors:
-  - "#00FF00" #C
-  - "#000000"
-  - "#222222" #D
-  - "#000000"
-  - "#222222" #E
-  - "#330500" #F
-  # - "#222222" #F
-  - "#000000"
-  - "#0000FF" #G
-  # - "#222222" #G
-  - "#000000"
-  - "#222222" #A
-  - "#000000"
-  - "#222222" #B
+# colors:
+#   - "#00FF00" #C
+#   - "#000000"
+#   - "#222222" #D
+#   - "#000000"
+#   - "#222222" #E
+#   - "#330500" #F
+#   # - "#222222" #F
+#   - "#000000"
+#   - "#0000FF" #G
+#   # - "#222222" #G
+#   - "#000000"
+#   - "#222222" #A
+#   - "#000000"
+#   - "#222222" #B
 
 #split mode, if non-0, offset the right half of the LP by this many octaves
 split_mode: 0
