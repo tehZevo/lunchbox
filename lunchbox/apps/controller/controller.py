@@ -15,8 +15,8 @@ DEBUG = False
 
 H_STEP = config.get("h_step", 1)
 V_STEP = config.get("v_step", 4)
-X_OFFSET = config.get("x_offset", 4)
-Y_OFFSET = config.get("x_offset", 3)
+X_OFFSET = config.get("x_offset", 0)
+Y_OFFSET = config.get("y_offset", 0)
 #middle c is 60
 ROOT = config.get("root", 24) #octave 3
 VEL_SCALE = config.get("vel_scale", 1.0)

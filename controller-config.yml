@@ -8,15 +8,17 @@ root: 24
 #velocity scaling; lower values "squish" the velocity space towards max velocity
 vel_scale: 0.5
 #amount to offset (right/up) the root note
+# x_offset: 4
+# y_offset: 3
 x_offset: 4
-y_offset: 3
+y_offset: 4
 #can be a single integer indicating the positive octave offset per pad,
 #or a list of relative octave offsets per pad
 pad_octave_offsets: [-1, 1]
 #output midi device to send events to
 #output_device: "lunchbox 3"
 # output_device: "Port-0 1"
-output_device: "Port-0"
+output_device: "Midi Through Port-0"
 #midi device to listen to; the Launchpad will light up as if it were playing notes heard from this device
 # feedback_device: "lunchbox"
 #enable the visualizer (requires pygame, see README)
@@ -51,10 +53,44 @@ visualizer: true
 #   - "#000000"
 #   - "#222222" #B
 
+#a "boundary" color palette for v_step=4
+colors:
+  - "#00FF00"
+  - "#00FF00"
+  - "#00FF00"
+  - "#00FF00"
+
+  - "#0000FF"
+  - "#000000"
+  - "#000000"
+  - "#000000"
+
+  - "#0000FF"
+  - "#000000"
+  - "#000000"
+  - "#000000"
+
+# #a "dot" color palette for v_step=4
+# colors:
+#   - "#00FF00"
+#   - "#000000"
+#   - "#000000"
+#   - "#000000"
+#
+#   - "#000000"
+#   - "#000000"
+#   - "#000000"
+#   - "#000000"
+#
+#   - "#000000"
+#   - "#000000"
+#   - "#000000"
+#   - "#000000"
+
 #split mode, if non-0, offset the right half of the LP by this many octaves
 split_mode: 0
 
 #TODO: test manual device listing
-# autodetect: false
-# in_devices: []
-# out_devices: []
+autodetect: false
+in_devices: ["LPX MIDI In 24", "LPX MIDI In 28"]
+out_devices: ["LPX MIDI In 24", "LPX MIDI In 28"]
