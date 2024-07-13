@@ -57,6 +57,8 @@ class Lunchbox:
         on_release=lambda x, y:None,
         on_polytouch=lambda x, y, val:None,
         visualizer=False,
+        update_rate=1/60,
+        update_function=lambda lunch: None
     ):
         self.on_press = on_press
         self.on_release = on_release
@@ -64,6 +66,8 @@ class Lunchbox:
         self.in_ports = []
         self.out_ports = []
         self.connected_devices = []
+        self.update_rate = update_rate
+        self.update_function = update_function
 
         self.visualizer = None
 
@@ -192,7 +196,9 @@ class Lunchbox:
 
         signal.signal(signal.SIGINT, signal_handler)
 
+        #TODO: run update function loop in separate thread than visualizer?
         while True:
             if self.visualizer is not None:
                 self.visualizer.step()
-            time.sleep(1/30)
+            self.update_function(self)
+            time.sleep(self.update_rate)
