@@ -21,11 +21,14 @@ X_OFFSET = config.get("x_offset", 0)
 Y_OFFSET = config.get("y_offset", 0)
 #middle c is 60
 ROOT = config.get("root", 24) #octave 3
-VEL_SCALE = config.get("vel_scale", 1.0)
+VEL_CENTER = config.get("vel_center", 80)
 VISUALIZER = config.get("visualizer", False)
 #can be int or list
 PAD_OCTAVE_OFFSETS = config.get("pad_octave_offsets", 1)
 SPLIT_MODE = config.get("split_mode", 0)
+
+SENSITIVITIES = [0, 0.25, 0.5, 1]
+cur_sensitivity = 1
 
 COLOR_ROOT = "#00FF00"
 COLOR_OFF = "#000000"
@@ -86,7 +89,8 @@ def set_pad_channel(pad, channel):
 #TODO: per-pad transpose
 #TODO: reset to configured transpose
 def press_top_button(button, pad):
-    global transpose
+    global transpose, cur_sensitivity
+    
     if DEBUG:
         print("Top button", button, "pressed")
     #octave up/down
@@ -110,6 +114,12 @@ def press_top_button(button, pad):
         transpose = 0
         print(f"Transpose reset ({transpose})")
         lunch.light(button, 8, "#FFFFFF", pad=pad)
+    elif button == 7:
+        cur_sensitivity += 1
+        if cur_sensitivity >= len(SENSITIVITIES):
+            cur_sensitivity = 0
+        print(f"Sensitivity changed to {SENSITIVITIES[cur_sensitivity]}")
+        lunch.light(button, 8, "#FFFFFF", pad=pad)
 
 def press_right_button(button, pad):
     if DEBUG:
@@ -121,10 +131,29 @@ def release_top_button(button, pad):
         print("Top button", button, "released")
     if button >= 0 and button < 5:
         lunch.light(button, 8, "#000000", pad=pad)
+    if button == 7:
+        update_sense_lights()
 
 def release_right_button(button, pad):
     if DEBUG:
         print("Right button", button, "released")
+
+def update_sense_lights():
+    #TODO: make global/config
+    sens_lights = [0, 32, 64, 127]
+    sens_l = sens_lights[cur_sensitivity]
+    lunch.light(7, 8, sens_l, sens_l, sens_l, pad=0)
+    lunch.light(7, 8, sens_l, sens_l, sens_l, pad=1)
+
+#calculate velocity based on center value in config and current sensitivity
+def calc_velocity(input_velocity):
+    sens = SENSITIVITIES[cur_sensitivity]
+    vel_float = input_velocity / 127.
+    vel_min = VEL_CENTER + (0 - VEL_CENTER) * sens
+    vel_max = VEL_CENTER + (127 - VEL_CENTER) * sens
+    velocity = int(vel_min + (vel_max - vel_min) * vel_float)
+
+    return velocity
 
 def press(x, y, velocity, pad=0):
     if x == 8:
@@ -136,7 +165,7 @@ def press(x, y, velocity, pad=0):
     note = xy_to_note(x, y, pad)
     if DEBUG:
         print("pad", pad, "pressed", note, velocity)
-    velocity = int((1 - VEL_SCALE) * 127) + int(velocity * VEL_SCALE)
+    velocity = calc_velocity(velocity)
     out_port.send(Message("note_on", note=note, velocity=velocity, channel=pad_channels[pad]))
     for pad in range(len(lunch.out_ports)):
         for x, y in get_all_xy(note, pad):
@@ -250,6 +279,7 @@ def main():
         feedback_port = mido.open_input(find_device(mido.get_input_names(), FEEDBACK_DEVICE), callback=lambda message: handle_feedback_message(message))
         
     reset_lights()
+    update_sense_lights()
     
     print("Ready!")
     lunch.wait()
