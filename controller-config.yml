@@ -22,14 +22,14 @@ output_device: "loopMIDI Port 3"
 visualizer: true
 #list of colors per note, starting at C if un-transposed
 colors:
-  - "#00FF44" #C
+  - "#22FF44" #C
   - "#000000"
   - "#222222" #D
   - "#000000"
   - "#222222" #E
-  - "#448844" #F
+  - "#226644" #F
   - "#000000"
-  - "#77FF77" #G
+  - "#226644" #G
   - "#000000"
   - "#222222" #A
   - "#000000"
