@@ -15,7 +15,7 @@ y_offset: -1
 #or a list of relative octave offsets per pad
 pad_octave_offsets: [-1, 1]
 #output midi device to send events to
-output_device: "loopMIDI Port 1"
+output_device: "loopMIDI Port 3"
 #midi device to listen to; the Launchpad will light up as if it were playing notes heard from this device
 # feedback_device: "lunchbox"
 #enable the visualizer (requires pygame, see README)
@@ -39,5 +39,5 @@ split_mode: 0
 
 #TODO: test manual device listing
 autodetect: false
-in_devices: ["MIDIIN2 (LPX MIDI) 2", "MIDIIN4 (LPX MIDI) 4"]
-out_devices: ["MIDIOUT2 (LPX MIDI) 3", "MIDIOUT4 (LPX MIDI) 5"]
+in_devices: ["MIDIIN2 (LPX MIDI) 4", "MIDIIN4 (LPX MIDI) 6"]
+out_devices: ["MIDIOUT2 (LPX MIDI) 5", "MIDIOUT4 (LPX MIDI) 7"]

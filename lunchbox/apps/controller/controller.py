@@ -76,15 +76,19 @@ def xy_to_note(x, y, pad):
     return note
 
 def set_pad_channel(pad, channel):
-    pad_channels[pad] = channel
+    pc = pad_channels[pad]
+    if channel in pc:
+        pc.remove(channel)
+    else:
+        pc.add(channel)
     #reset lights
     for i in range(8):
         lunch.light(8, i, "#000000", pad=pad)
     #set channel light from top down
-    if channel < 8:
-        lunch.light(8, 7 - channel, "#FFFFFF", pad=pad)
+    for c in pc:
+        lunch.light(8, 7 - c, "#FFFFFF", pad=pad)
 
-    print(f"Pad {pad} changed to channel {channel}")
+    print(f"Pad {pad} changed to channels {pc}")
 
 #TODO: per-pad transpose
 #TODO: reset to configured transpose
@@ -166,7 +170,8 @@ def press(x, y, velocity, pad=0):
     if DEBUG:
         print("pad", pad, "pressed", note, velocity)
     velocity = calc_velocity(velocity)
-    out_port.send(Message("note_on", note=note, velocity=velocity, channel=pad_channels[pad]))
+    for c in pad_channels[pad]:
+        out_port.send(Message("note_on", note=note, velocity=velocity, channel=c))
     for pad in range(len(lunch.out_ports)):
         for x, y in get_all_xy(note, pad):
             lunch.light(x, y, "#FFFFFF", pad=pad)
@@ -181,7 +186,8 @@ def release(x, y, pad=0):
     note = xy_to_note(x, y, pad)
     if DEBUG:
         print("pad", pad, "released", note)
-    out_port.send(Message("note_on", note=note, velocity=0, channel=pad_channels[pad]))
+    for c in pad_channels[pad]:
+        out_port.send(Message("note_on", note=note, velocity=0, channel=c))
     for pad in range(len(lunch.out_ports)):
         for x, y in get_all_xy(note, pad):
             lunch.light(x, y, get_natural_color(x, y, pad), pad=pad)
@@ -266,9 +272,9 @@ def main():
     if type(PAD_OCTAVE_OFFSETS) == int:
         PAD_OCTAVE_OFFSETS = [PAD_OCTAVE_OFFSETS * i for i in range(len(lunch.out_ports))]
 
-    pad_channels = [0 for _ in lunch.connected_devices]
-    for pad, channel in enumerate(pad_channels):
-        set_pad_channel(pad, channel)
+    pad_channels = [set() for _ in lunch.connected_devices]
+    for pad, _ in enumerate(pad_channels):
+        set_pad_channel(pad, 0)
     
     print("Opening output device...")
     out_port = mido.open_output(find_device(mido.get_output_names(), OUTPUT_DEVICE))
